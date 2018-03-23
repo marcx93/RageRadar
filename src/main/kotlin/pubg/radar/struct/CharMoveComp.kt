@@ -3,6 +3,7 @@ package pubg.radar.struct
 import pubg.radar.deserializer.shortRotationScale
 import pubg.radar.struct.cmd.selfCoords
 import pubg.radar.struct.cmd.selfDirection
+import pubg.radar.struct.cmd.*
 import pubg.radar.struct.cmd.CMD.propertyInt
 
 
@@ -52,6 +53,7 @@ fun charmovecomp(bunch: Bunch, client: Boolean = false) {
             if (rpcPayload.readBit()) {
                 val clientLoc = rpcPayload.readVector(100, 30)
                 selfCoords.set(clientLoc.x, clientLoc.y, clientLoc.z)
+				selfHeight = clientLoc.z
             }
             if (rpcPayload.readBit()) {
                 val compressedMoveFlags = rpcPayload.readUInt8()
@@ -88,6 +90,7 @@ fun charmovecomp(bunch: Bunch, client: Boolean = false) {
             if (rpcPayload.readBit()) {
                 val clientLoc = rpcPayload.readVector(100, 30)
                 selfCoords.set(clientLoc.x, clientLoc.y, clientLoc.z)
+				selfHeight = clientLoc.z
             }
             if (rpcPayload.readBit()) {
                 val compressedMoveFlags = rpcPayload.readUInt8()
@@ -123,6 +126,7 @@ fun charmovecomp(bunch: Bunch, client: Boolean = false) {
             if (rpcPayload.readBit()) {
                 val clientLoc = rpcPayload.readVector(100, 30)
                 selfCoords.set(clientLoc.x, clientLoc.y, clientLoc.z)
+				selfHeight = clientLoc.z
             }
             if (rpcPayload.readBit()) {
                 val newFlags = rpcPayload.readUInt8()
@@ -145,6 +149,7 @@ fun charmovecomp(bunch: Bunch, client: Boolean = false) {
             if (rpcPayload.readBit()) {
                 val clientLoc = rpcPayload.readVector(100, 30)
                 selfCoords.set(clientLoc.x, clientLoc.y, clientLoc.z)
+				selfHeight = clientLoc.z
             }
             if (rpcPayload.readBit()) {
                 val compressedMoveFlags = rpcPayload.readUInt8()

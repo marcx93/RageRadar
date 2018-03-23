@@ -33,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 var selfDirection = 0f
 val selfCoords = Vector3()
+var selfHeight = 0f
 var selfAttachTo: Actor? = null
 
 

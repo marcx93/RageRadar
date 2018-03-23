@@ -68,6 +68,7 @@ import pubg.radar.struct.cmd.GameStateCMD.SafetyZonePosition
 import pubg.radar.struct.cmd.GameStateCMD.SafetyZoneRadius
 import pubg.radar.struct.cmd.GameStateCMD.TotalWarningDuration
 import pubg.radar.struct.cmd.GameStateCMD.isTeamMatch
+import pubg.radar.struct.cmd.selfHeight
 import pubg.radar.struct.cmd.PlayerStateCMD.attacks
 import pubg.radar.struct.cmd.PlayerStateCMD.playerNames
 import pubg.radar.struct.cmd.PlayerStateCMD.playerNumKills
@@ -75,7 +76,7 @@ import pubg.radar.struct.cmd.PlayerStateCMD.selfID
 import pubg.radar.struct.cmd.PlayerStateCMD.selfStateID
 import pubg.radar.struct.cmd.PlayerStateCMD.teamNumbers
 
-import pubg.radar.util.tuple4
+import pubg.radar.util.tuple5
 import wumo.pubg.struct.cmd.TeamCMD.team
 import java.security.Key
 import java.text.DecimalFormat
@@ -83,7 +84,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.pow
 
-typealias renderInfo = tuple4<Actor, Float, Float, Float>
+typealias renderInfo = tuple5<Actor, Float, Float, Float, Float>
 
 //fun Float.d(n: Int) = String.format("%.${n}f", this)
 class GLMap : InputAdapter(), ApplicationListener, GameListener {
@@ -583,10 +584,12 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             if (Type == Plane || Type == Parachute) {
                 firstAttach = false
                 selfCoords.set(location.x, location.y, location.z)
+				selfHeight = location.z
                 selfDirection = rotation.y
             } else {
                 firstAttach = false
                 selfCoords.set(location.x, location.y, location.z)
+				selfHeight = location.z
                 selfDirection = rotation.y
             }
         }
@@ -647,8 +650,8 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 val list = v ?: ArrayList()
                 val (centerX, centerY) = actor.location
                 val direction = actor.rotation.y
-                allPlayers?.add(tuple4(actor,centerX,centerY,direction))
-                list.add(tuple4(actor, centerX, centerY, direction))
+                allPlayers?.add(tuple5(actor, centerX, centerY, actor.location.z, direction))
+                list.add(tuple5(actor, centerX, centerY, actor.location.z, direction))
                 list
             }
 
@@ -868,7 +871,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             //OLD
             //drawMyself(tuple4(null, selfX, selfY, selfDir.angle()))
             drawPawns(typeLocation)
-            drawMyself(tuple4(null, selfX, selfY, selfDirection))
+            drawMyself(tuple5(null, selfX, selfY, selfHeight, selfDirection))
         }
 
 
@@ -903,7 +906,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
     }
 
     private fun drawMyself(actorInfo: renderInfo) {
-        val (_, x, y, dir) = actorInfo
+        val (_, x, y, z, dir) = actorInfo
         val (sx, sy) = Vector2(x, y).mapToWindow()
         var parents = actors[selfID]?.attachParent
         if (parents == null) {
@@ -1042,7 +1045,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             when (type) {
                 TwoSeatBoat -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "JSKI", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1073,7 +1076,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 SixSeatBoat -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "BOAT", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1104,7 +1107,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 TwoSeatBike -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "BIKE", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1135,7 +1138,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 TwoSeatCar -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "BUGGY", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1170,7 +1173,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 ThreeSeatCar -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "BIKE", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1202,7 +1205,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 FourSeatDU -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "CAR", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1238,7 +1241,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 FourSeatP -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "PICKUP", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1273,7 +1276,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 SixSeatCar -> actorInfos?.forEach {
                     if (toggleVehicles != 1) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (toggleVNames != 1) compaseFont.draw(spriteBatch, "VAN", sx + 15, windowHeight - sy - 2)
                         val v_x = actor!!.velocity.x
@@ -1308,7 +1311,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 Player -> actorInfos?.forEach {
                     for ((_, _) in typeLocation) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         if (isTeammate(actor)) {
                             if (toggleView != -1) {
@@ -1347,7 +1350,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
                 }
                 Parachute -> actorInfos?.forEach {
                     for ((_, _) in typeLocation) {
-                        val (actor, x, y, dir) = it
+                        val (actor, x, y, z, dir) = it
                         val (sx, sy) = Vector2(x, y).mapToWindow()
                         val children = actor!!.attachChildren
                         if (children.isNotEmpty() && (actorWithPlayerState[ArrayList(children.keys)[0]]) != null) {
@@ -1417,9 +1420,9 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
 
     fun drawPlayerNames(players: MutableList<renderInfo>?, selfX: Float, selfY: Float) {
         players?.forEach {
-            val (actor, x, y, _) = it
+            val (actor, x, y, z, _) = it
             actor!!
-            val dir = Vector2(x - selfX, y - selfY)
+            val dir = Vector2(x - selfX, y - selfY)			
             val distance = (dir.len() / 100).toInt()
             val angle = ((dir.angle() + 90) % 360).toInt()
             val (sx, sy) = mapToWindow(x, y)
@@ -1430,6 +1433,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             val health = actorHealth[actor.netGUID] ?: 100f
             val equippedWeapons = actorHasWeapons[actor.netGUID]
             val df = DecimalFormat("###.#")
+			val deltaHeight = (if (z > selfHeight) "+" else "-") + df.format((z - selfHeight) / 100f)
             var weapon: MutableList<String> = mutableListOf<String>()
             val offsetDist = 3
             if (equippedWeapons != null) {
@@ -1441,7 +1445,7 @@ class GLMap : InputAdapter(), ApplicationListener, GameListener {
             }
             if (filterNames != 1) {
                 //First Let's Draw DISTANCE
-                val fontText = "${distance}m | $angle°"
+                val fontText = "${distance}m | $angle°|${deltaHeight}m\n"
                 var wep_xoff = getPositionOffset(nameFont,fontText)
                 nameFont.draw(spriteBatch,
                         "$fontText", sx - wep_xoff.toFloat(), windowHeight - sy +30)
